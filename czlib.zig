@@ -2,6 +2,12 @@ pub const std = @import("std");
 pub const print = std.debug.print;
 pub const str = []const u8;
 
+// Library error report //
+pub fn liberr(report: str) void {
+    strout("\n@CZLib(**ERROR**) >> ");
+    strout(report);
+}
+
 // Random I32 Ints //
 pub fn rng(min: i32, max: i32) i32 {
     const random = std.crypto.random;
