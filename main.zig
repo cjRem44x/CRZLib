@@ -1,9 +1,9 @@
-const cz = @import("czlib.zig");
+const crz = @import("crzlib.zig");
 
 pub fn main() !void {
-    var buf: [10]u8 = undefined;
-    const name = try cz.cin(&buf, "enter name: ");
-    cz.print("hello {s}\n", .{name});
+    const pa = crz.std.heap.page_allocator;
+    const n = try crz.strcat(pa, "hello", "hello");
+    defer pa.free(n);
 
-    cz.liberr("testing");
+    crz.print("{s}\n", .{n});
 }
