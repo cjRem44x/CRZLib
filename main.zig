@@ -1,9 +1,20 @@
 const crz = @import("crzlib.zig");
 
 pub fn main() !void {
+    test_sqrt();
+}
+
+fn test_sqrt() void {
+    const n = 3.14;
+
     crz.print(
         "{d}\n",
-        .{crz.inv_sqrt(3.4)}
+        .{ crz.sqrt(n) }
+    );
+
+    crz.print(
+        "{d}\n",
+        .{ crz.sqrt_f64(n)}
     );
 }
 

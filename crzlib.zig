@@ -105,6 +105,29 @@ pub fn rng_i128(min: i128, max: i128) i128 {
 
 // SQRT SHORTCUT //
 //
+// double guess = number / 2; // Initial guess
+//         double precision = 1e-6;  // Precision threshold
+
+//         while (Math.abs(guess * guess - number) > precision) {
+//             guess = (guess + number / guess) / 2; // Update guess
+//         }
+pub fn sqrt_f64(n: f64) f64 {
+    var guess: f64 = n/2.00;
+    const precision: f64 = 1e-6;
+
+    while (abs(guess*guess - n) > precision) {
+        guess = (guess + n / guess) / 2;
+    }
+    return guess;
+}
+//
+fn abs(n: f64) f64 {
+    if (n < 0) {
+        return n*-1.00;
+    } 
+    return n;
+}
+//
 pub fn sqrt(x: anytype) Sqrt(@TypeOf(x)) {
     return std.math.sqrt(x);
 } 
