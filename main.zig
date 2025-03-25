@@ -1,26 +1,19 @@
 const crz = @import("crzlib.zig");
 
 pub fn main() !void {
-    test_sqrt();
+    crz.print("{d}\n", .{crz.pow(3.14, 2)});
 }
 
 fn test_sqrt() void {
     const n = 3.14;
 
-    crz.print(
-        "{d}\n",
-        .{ crz.sqrt(n) }
-    );
+    crz.print("{d}\n", .{crz.sqrt(n)});
 
-    crz.print(
-        "{d}\n",
-        .{ crz.sqrt_f64(n)}
-    );
+    crz.print("{d}\n", .{crz.sqrt_f64(n)});
 }
 
 fn test_term() void {
-	crz.term(&[_][]const u8{"cmd", "/C"}) 
-		catch crz.strout("Terminal Write Failed!\n");
+    crz.term(&[_][]const u8{ "cmd", "/C" }) catch crz.strout("Terminal Write Failed!\n");
 }
 
 fn test_c_system() void {

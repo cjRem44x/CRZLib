@@ -5,8 +5,7 @@ pub const print = std.debug.print;
 pub const str = []const u8;
 //
 // C Libs
-pub const cstdlib = @cImport( @cInclude("stdlib.h") );
-
+pub const cstdlib = @cImport(@cInclude("stdlib.h"));
 
 // LIB ERROR //
 //
@@ -15,19 +14,17 @@ pub fn liberr(report: str) void {
     strout(report);
 }
 
-
 // C STDLIB //
 //
-// NOTE: 
+// NOTE:
 pub fn c_system(s: [*c]const u8) void {
     _ = cstdlib.system(s);
 }
 
-
 // ZIG TERMINAL //
 //
-// NOTE: use '&[_][]const u8{"zig", "zen"}' for 
-// array of strings. 
+// NOTE: use '&[_][]const u8{"zig", "zen"}' for
+// array of strings.
 pub fn term(argv: []const []const u8) !void {
     // Create an arena allocator for memory management
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -44,18 +41,16 @@ pub fn term(argv: []const []const u8) !void {
     std.debug.print("{s}\n", .{result.stdout});
 }
 
-
 // OS DEPENDENT //
 //
 // NOTE: this function may only work Windows.
 pub fn open_url(url: []const u8) void {
-	term(&[_][]const u8{"cmd", "/C", "start", url}) catch liberr("Failed to open URL!\n");
+    term(&[_][]const u8{ "cmd", "/C", "start", url }) catch liberr("Failed to open URL!\n");
 }
 //
 pub fn open_file(file_path: []const u8) void {
-    term(&[_][]const u8{"cmd", "/C", "start", file_path}) catch liberr("Failed to open file!\n");
+    term(&[_][]const u8{ "cmd", "/C", "start", file_path }) catch liberr("Failed to open file!\n");
 }
-
 
 // STRING FUNCS //
 //
@@ -72,12 +67,11 @@ pub fn strcat(alloc: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const
     return std.mem.concat(alloc, u8, &[_][]const u8{ s1, s2 });
 }
 
-
 // RANDOM NUMBERS //
 //
 pub fn rng_i32(min: i32, max: i32) i32 {
     const random = std.crypto.random;
-    if (max-min > 0) {
+    if (max - min > 0) {
         return random.intRangeAtMost(i32, min, max);
     } else {
         return min;
@@ -86,7 +80,7 @@ pub fn rng_i32(min: i32, max: i32) i32 {
 //
 pub fn rng_i64(min: i64, max: i64) i64 {
     const random = std.crypto.random;
-    if (max-min > 0) {
+    if (max - min > 0) {
         return random.intRangeAtMost(i64, min, max);
     } else {
         return min;
@@ -95,13 +89,12 @@ pub fn rng_i64(min: i64, max: i64) i64 {
 //
 pub fn rng_i128(min: i128, max: i128) i128 {
     const random = std.crypto.random;
-    if (max-min > 0) {
+    if (max - min > 0) {
         return random.intRangeAtMost(i128, min, max);
     } else {
         return min;
     }
 }
-
 
 // SQRT SHORTCUT //
 //
@@ -115,28 +108,28 @@ pub fn sqrt_f64(n: f64) f64 {
         return n;
     }
 
-    var guess: f64 = n/2.00;
+    var guess: f64 = n / 2.00;
     const precision: f64 = 1e-6;
 
-    while (abs(guess*guess - n) > precision) {
+    while (abs_f64(guess * guess - n) > precision) {
         guess = (guess + n / guess) / 2;
     }
     return guess;
 }
 //
-fn abs(n: f64) f64 {
+fn abs_f64(n: f64) f64 {
     if (n < 0) {
-        return n*-1.00;
-    } 
+        return n * -1.00;
+    }
     return n;
 }
 //
 pub fn sqrt(x: anytype) Sqrt(@TypeOf(x)) {
     return std.math.sqrt(x);
-} 
+}
 //
 pub fn inv_sqrt(x: anytype) Sqrt(@TypeOf(x)) {
-    return 1.00/std.math.sqrt(x);
+    return 1.00 / std.math.sqrt(x);
 }
 //
 // From Zig Lib ->
@@ -148,13 +141,26 @@ pub fn Sqrt(comptime T: type) type {
     };
 }
 
+// POWER OF //
+//
+pub fn pow(x: anytype, exp: usize) @TypeOf(x) {
+    if (exp == 0) {
+        return @as(@TypeOf(x), 1);
+    }
+
+    var y = x;
+    for (0..exp - 1) |_| {
+        y *= x;
+    }
+
+    return y;
+}
 
 // STRING TO CONSOLE //
 //
 pub fn strout(s: []const u8) void {
     print("{s}", .{s});
 }
-
 
 // CONSOLE INPUT //
 //
@@ -168,7 +174,6 @@ pub fn cin(buf: []u8, prompt: []const u8) ![]const u8 {
         return line;
     }
 }
-
 
 // PARSE TO NUMS //
 //
