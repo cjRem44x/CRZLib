@@ -106,6 +106,15 @@ pub fn rng_i128(min: i128, max: i128) i128 {
 // SQRT SHORTCUT //
 //
 pub fn sqrt_f64(n: f64) f64 {
+    if (n < 0.0) {
+        liberr("Cannot square root negative float!\n");
+        return 0.0;
+    }
+
+    if (n == 1.0 or n == 0.0) {
+        return n;
+    }
+
     var guess: f64 = n/2.00;
     const precision: f64 = 1e-6;
 
