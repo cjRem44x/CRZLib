@@ -1,4 +1,4 @@
-// AUTHOR: CJ Remillard //
+// AUTHOR: CJ Remillard
 //
 pub const std = @import("std");
 pub const print = std.debug.print;
