@@ -1,8 +1,8 @@
 // AUTHOR: CJ Remillard //
 //
-pub const std   = @import("std");
+pub const std = @import("std");
 pub const print = std.debug.print;
-pub const str   = []const u8;
+pub const str = []const u8;
 
 
 // LIB ERROR //
@@ -21,8 +21,11 @@ pub fn streql(s1: []const u8, s2: []const u8) bool {
 //
 // NOTE: to use 'cat()' an allocator from std.heap.*
 // must be provided.
+// NOTE: after allocating space of returned string
+// it is recommended to use 'defer allocator.free(
+// result_string)'
 pub fn strcat(alloc: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const u8 {
-    return std.mem.concat(alloc, u8, &[_][]const u8{s1, s2});
+    return std.mem.concat(alloc, u8, &[_][]const u8{ s1, s2 });
 }
 
 
@@ -30,7 +33,29 @@ pub fn strcat(alloc: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const
 //
 pub fn rng_i32(min: i32, max: i32) i32 {
     const random = std.crypto.random;
-    return random.intRangeAtMost(i32, min, max);
+    if (max-min > 0) {
+        return random.intRangeAtMost(i32, min, max);
+    } else {
+        return min;
+    }
+}
+//
+pub fn rng_i64(min: i64, max: i64) i64 {
+    const random = std.crypto.random;
+    if (max-min > 0) {
+        return random.intRangeAtMost(i64, min, max);
+    } else {
+        return min;
+    }
+}
+//
+pub fn rng_i128(min: i128, max: i128) i128 {
+    const random = std.crypto.random;
+    if (max-min > 0) {
+        return random.intRangeAtMost(i128, min, max);
+    } else {
+        return min;
+    }
 }
 
 
