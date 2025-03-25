@@ -14,6 +14,54 @@ pub fn liberr(report: str) void {
     strout(report);
 }
 
+// COMMAND LINE ARGS //
+//
+pub fn get_args(allocator: std.mem.Allocator) ![][]const u8 {
+    // Get the argument iterator from the standard library
+    var arg_it = try std.process.argsAlloc(allocator);
+    defer std.process.argsFree(allocator, arg_it);
+
+    // Create a new array to store the arguments (skipping the first arg, which is the program name)
+    var args = std.ArrayList([]const u8).init(allocator);
+    defer args.deinit();
+
+    // Skip the first argument (program name) and copy the rest
+    for (arg_it[1..]) |arg| {
+        const arg_copy = try allocator.dupe(u8, arg);
+        try args.append(arg_copy);
+    }
+
+    // Return the slice of arguments
+    return args.toOwnedSlice();
+}
+
+// READ FILE //
+//
+pub fn read_file(allocator: std.mem.Allocator, path: []const u8) ![][]const u8 {
+    // Open the file
+    const file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
+    // Create a dynamic array to store lines
+    var lines = std.ArrayList([]const u8).init(allocator);
+    defer lines.deinit();
+
+    // Read file line by line
+    var buf_reader = std.io.bufferedReader(file.reader());
+    var in_stream = buf_reader.reader();
+
+    var buf: [1024]u8 = undefined;
+    while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
+        // Trim whitespace and create a copy of the line
+        //const trimmed_line = std.mem.trim(u8, line, " \r\n");
+        const line_copy = try allocator.dupe(u8, line);
+        try lines.append(line_copy);
+    }
+
+    // Return the array of lines
+    return lines.toOwnedSlice();
+}
+
 // C STDLIB //
 //
 // NOTE:
@@ -65,6 +113,44 @@ pub fn streql(s1: []const u8, s2: []const u8) bool {
 // result_string)'
 pub fn strcat(alloc: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const u8 {
     return std.mem.concat(alloc, u8, &[_][]const u8{ s1, s2 });
+}
+//
+//
+// Split string based on pattern
+pub fn strsplit(input: []const u8, pattern: []const u8) ![][]const u8 {
+    const allocator = std.heap.page_allocator;
+
+    // Create an array to store split substrings
+    var results = std.ArrayList([]const u8).init(allocator);
+    defer results.deinit();
+
+    // If delimiter is empty, return the entire input as a single item
+    if (pattern.len == 0) {
+        const copy = try allocator.dupe(u8, input);
+        try results.append(copy);
+        return results.toOwnedSlice();
+    }
+
+    var start: usize = 0;
+    while (std.mem.indexOf(u8, input[start..], pattern)) |pos| {
+        // Extract the substring before the delimiter
+        if (pos > 0) {
+            const substring = try allocator.dupe(u8, input[start .. start + pos]);
+            try results.append(substring);
+        }
+
+        // Move past the delimiter
+        start += pos + pattern.len;
+    }
+
+    // Add the remaining part of the string
+    if (start < input.len) {
+        const substring = try allocator.dupe(u8, input[start..]);
+        try results.append(substring);
+    }
+
+    // Return the array of substrings
+    return results.toOwnedSlice();
 }
 
 // RANDOM NUMBERS //

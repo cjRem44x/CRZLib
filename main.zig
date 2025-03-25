@@ -1,7 +1,10 @@
 const crz = @import("crzlib.zig");
 
 pub fn main() !void {
-    crz.print("{d}\n", .{crz.pow(3.14, 2)});
+    const args = try crz.strsplit("the dog is brown", " ");
+    for (args) |e| {
+        crz.print("{s}", .{e});
+    }
 }
 
 fn test_sqrt() void {
