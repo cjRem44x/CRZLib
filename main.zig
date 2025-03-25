@@ -1,7 +1,12 @@
 const crz = @import("crzlib.zig");
 
 pub fn main() !void {
-    test_c_system();
+    crz.open_url("https://ziglang.org/download/");
+}
+
+fn test_term() void {
+	crz.term(&[_][]const u8{"cmd", "/C"}) 
+		catch crz.strout("Terminal Write Failed!\n");
 }
 
 fn test_c_system() void {

@@ -1,4 +1,4 @@
-// AUTHOR: CJ Remillard
+// AUTHOR: CJ Remillar
 //
 pub const std = @import("std");
 pub const print = std.debug.print;
@@ -16,11 +16,40 @@ pub fn liberr(report: str) void {
 }
 
 
-// CSTDLIB //
+// C STDLIB //
 //
 // NOTE: 
 pub fn c_system(s: [*c]const u8) void {
     _ = cstdlib.system(s);
+}
+
+
+// ZIG TERMINAL //
+//
+// NOTE: use '&[_][]const u8{"zig", "zen"}' for 
+// array of strings. 
+pub fn term(argv: []const []const u8) !void {
+    // Create an arena allocator for memory management
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    // Execute the command
+    const result = try std.process.Child.run(.{
+        .allocator = allocator,
+        .argv = argv,
+    });
+
+    // Print the output of the command
+    std.debug.print("{s}\n", .{result.stdout});
+}
+
+
+// OS DEPENDENT //
+//
+// NOTE: this function may only work Windows.
+pub fn open_url(url: []const u8) void {
+	term(&[_][]const u8{"cmd", "/C", "start", url}) catch liberr("Failed to open URL!\n");
 }
 
 
