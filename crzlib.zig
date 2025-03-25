@@ -3,6 +3,9 @@
 pub const std = @import("std");
 pub const print = std.debug.print;
 pub const str = []const u8;
+//
+// C Libs
+pub const cstdlib = @cImport( @cInclude("stdlib.h") );
 
 
 // LIB ERROR //
@@ -10,6 +13,14 @@ pub const str = []const u8;
 pub fn liberr(report: str) void {
     strout("\n@CRZLib(**ERROR**) >> ");
     strout(report);
+}
+
+
+// CSTDLIB //
+//
+// NOTE: 
+pub fn c_system(s: [*c]const u8) void {
+    _ = cstdlib.system(s);
 }
 
 
