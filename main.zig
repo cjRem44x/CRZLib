@@ -1,7 +1,10 @@
 const crz = @import("crzlib.zig");
 
 pub fn main() !void {
-    crz.open_url("https://ziglang.org/download/");
+    crz.print(
+        "{d}\n",
+        .{crz.inv_sqrt(3.4)}
+    );
 }
 
 fn test_term() void {

@@ -51,6 +51,10 @@ pub fn term(argv: []const []const u8) !void {
 pub fn open_url(url: []const u8) void {
 	term(&[_][]const u8{"cmd", "/C", "start", url}) catch liberr("Failed to open URL!\n");
 }
+//
+pub fn open_file(file_path: []const u8) void {
+    term(&[_][]const u8{"cmd", "/C", "start", file_path}) catch liberr("Failed to open file!\n");
+}
 
 
 // STRING FUNCS //
@@ -96,6 +100,26 @@ pub fn rng_i128(min: i128, max: i128) i128 {
     } else {
         return min;
     }
+}
+
+
+// SQRT SHORTCUT //
+//
+pub fn sqrt(x: anytype) Sqrt(@TypeOf(x)) {
+    return std.math.sqrt(x);
+} 
+//
+pub fn inv_sqrt(x: anytype) Sqrt(@TypeOf(x)) {
+    return 1.00/std.math.sqrt(x);
+}
+//
+// From Zig Lib ->
+/// Returns the return type `sqrt` will return given an operand of type `T`.
+pub fn Sqrt(comptime T: type) type {
+    return switch (@typeInfo(T)) {
+        .int => |int| @Type(.{ .int = .{ .signedness = .unsigned, .bits = (int.bits + 1) / 2 } }),
+        else => T,
+    };
 }
 
 
