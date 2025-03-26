@@ -93,7 +93,7 @@ pub fn term(argv: []const []const u8) !void {
 //
 // NOTE: this function may only work Windows.
 pub fn open_url(url: []const u8) void {
-    term(&[_][]const u8{ "cmd", "/C", "start", url }) catch liberr("Failed to open URL!\n");
+    term(&[_][]const u8{ "explorer", url }) catch liberr("Failed to open URL!\n");
 }
 //
 pub fn open_file(file_path: []const u8) void {
@@ -177,6 +177,15 @@ pub fn rng_i128(min: i128, max: i128) i128 {
     const random = std.crypto.random;
     if (max - min > 0) {
         return random.intRangeAtMost(i128, min, max);
+    } else {
+        return min;
+    }
+}
+//
+pub fn rng_usize(min: usize, max: usize) usize {
+    const random = std.crypto.random;
+    if (max - min > 0) {
+        return random.intRangeAtMost(usize, min, max);
     } else {
         return min;
     }
