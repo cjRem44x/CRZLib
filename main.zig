@@ -1,10 +1,14 @@
 const crz = @import("crzlib.zig");
 
 pub fn main() !void {
-    const args = try crz.strsplit("the dog is brown", " ");
-    for (args) |e| {
-        crz.print("{s}", .{e});
-    }
+    test_file_sys();
+}
+
+fn test_file_sys() void {
+    crz.print("real file = {}\n", .{crz.is_file("main.zig")});
+    crz.print("real file = {}\n", .{crz.is_file("helloworld.zig")});
+
+    crz.print("real dir = {}\n", .{crz.is_dir("C:\\Users\\cremi\\Desktop\\C")});
 }
 
 fn test_sqrt() void {

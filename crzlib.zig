@@ -61,6 +61,26 @@ pub fn read_file(allocator: std.mem.Allocator, path: []const u8) ![][]const u8 {
     // Return the array of lines
     return lines.toOwnedSlice();
 }
+//
+//
+pub fn is_file(path: []const u8) bool {
+    const stat = std.fs.cwd().statFile(path) catch |err| switch (err) {
+        error.FileNotFound => return false,
+        error.IsDir => return false,
+        else => return false,
+    };
+    _ = stat;
+
+    // If we've reached this point, it's a file
+    return true;
+}
+//
+/// Checks if the given path is a directory
+pub fn is_dir(path: []const u8) bool {
+    var dir = std.fs.cwd().openDir(path, .{}) catch return false;
+    defer dir.close();
+    return true;
+}
 
 // C STDLIB //
 //
