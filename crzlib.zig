@@ -131,8 +131,8 @@ pub fn streql(s1: []const u8, s2: []const u8) bool {
 // NOTE: after allocating space of returned string
 // it is recommended to use 'defer allocator.free(
 // result_string)'
-pub fn strcat(alloc: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const u8 {
-    return std.mem.concat(alloc, u8, &[_][]const u8{ s1, s2 });
+pub fn strcat(allocator: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const u8 {
+    return std.mem.concat(allocator, u8, &[_][]const u8{ s1, s2 });
 }
 //
 //
@@ -275,6 +275,12 @@ pub fn pow(x: anytype, exp: usize) @TypeOf(x) {
 //
 pub fn strout(s: []const u8) void {
     print("{s}", .{s});
+}
+//
+// NOTE: use 'log()' to print to the console,
+// with new line -- similar to println().
+pub fn log(s: []const u8) void {
+    print("{s}\n", .{s});
 }
 
 // CONSOLE INPUT //

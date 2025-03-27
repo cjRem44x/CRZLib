@@ -1,14 +1,17 @@
 const crz = @import("crzlib.zig");
 
-pub fn main() !void {
-    test_file_sys();
-}
+pub fn main() !void {}
 
 fn test_file_sys() void {
     crz.print("real file = {}\n", .{crz.is_file("main.zig")});
     crz.print("real file = {}\n", .{crz.is_file("helloworld.zig")});
 
     crz.print("real dir = {}\n", .{crz.is_dir("C:\\Users\\cremi\\Desktop\\C")});
+}
+
+fn test_log() void {
+    crz.log("Hello, World!");
+    crz.log("foo bar");
 }
 
 fn test_sqrt() void {
