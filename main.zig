@@ -1,6 +1,19 @@
 const crz = @import("crzlib.zig");
 
-pub fn main() !void {}
+pub fn main() !void {
+    test_strsplit();
+}
+
+fn test_strsplit() void {
+    const str = "foo:bar:baz";
+    const split = crz.strsplit(str, ":") catch {
+        crz.strout("Failed to split string!\n");
+        return;
+    };
+    for (split) |s| {
+        crz.print("{s}\n", .{s});
+    }
+}
 
 fn test_file_sys() void {
     crz.print("real file = {}\n", .{crz.is_file("main.zig")});

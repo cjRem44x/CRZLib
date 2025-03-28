@@ -1,5 +1,39 @@
-// AUTHOR: CJ Remillard
+// MIT License
 //
+// Copyright (c) 2024 CJ Remillard
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+/// CRZLib - A Utility Library for Zig
+/// Author: CJ Remillard
+///
+/// This library provides a collection of utility functions for common programming tasks
+/// including file operations, string manipulation, mathematical functions, and more.
+///
+/// Key Features:
+/// - File and Directory Operations
+/// - String Manipulation
+/// - Random Number Generation
+/// - Mathematical Functions
+/// - System Commands
+/// - Number Parsing
+/// - Console I/O
 pub const std = @import("std");
 pub const print = std.debug.print;
 pub const str = []const u8;
@@ -9,6 +43,8 @@ pub const cstdlib = @cImport(@cInclude("stdlib.h"));
 
 // LIB ERROR //
 //
+/// Error Reporting
+/// Prints formatted error messages with the CRZLib prefix
 pub fn liberr(report: str) void {
     strout("\n@CRZLib(**ERROR**) >> ");
     strout(report);
@@ -16,6 +52,9 @@ pub fn liberr(report: str) void {
 
 // COMMAND LINE ARGS //
 //
+/// Command Line Arguments
+/// Returns an array of command line arguments (excluding program name)
+/// Memory must be freed by the caller
 pub fn get_args(allocator: std.mem.Allocator) ![][]const u8 {
     // Get the argument iterator from the standard library
     var arg_it = try std.process.argsAlloc(allocator);
@@ -37,6 +76,9 @@ pub fn get_args(allocator: std.mem.Allocator) ![][]const u8 {
 
 // READ FILE //
 //
+/// File Operations
+/// Reads a file and returns its contents as an array of strings (one per line)
+/// Memory must be freed by the caller
 pub fn read_file(allocator: std.mem.Allocator, path: []const u8) ![][]const u8 {
     // Open the file
     const file = try std.fs.cwd().openFile(path, .{});
@@ -63,6 +105,8 @@ pub fn read_file(allocator: std.mem.Allocator, path: []const u8) ![][]const u8 {
 }
 //
 //
+/// File System Checks
+/// Returns true if the path points to a file
 pub fn is_file(path: []const u8) bool {
     const stat = std.fs.cwd().statFile(path) catch |err| switch (err) {
         error.FileNotFound => return false,
@@ -75,7 +119,8 @@ pub fn is_file(path: []const u8) bool {
     return true;
 }
 //
-/// Checks if the given path is a directory
+/// Directory Checks
+/// Returns true if the path points to a directory
 pub fn is_dir(path: []const u8) bool {
     var dir = std.fs.cwd().openDir(path, .{}) catch return false;
     defer dir.close();
@@ -84,7 +129,8 @@ pub fn is_dir(path: []const u8) bool {
 
 // C STDLIB //
 //
-// NOTE:
+/// System Commands
+/// Executes a system command using the C standard library
 pub fn c_system(s: [*c]const u8) void {
     _ = cstdlib.system(s);
 }
@@ -93,6 +139,8 @@ pub fn c_system(s: [*c]const u8) void {
 //
 // NOTE: use '&[_][]const u8{"zig", "zen"}' for
 // array of strings.
+/// Terminal Commands
+/// Executes a command in the terminal and returns its output
 pub fn term(argv: []const []const u8) !void {
     // Create an arena allocator for memory management
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -112,16 +160,21 @@ pub fn term(argv: []const []const u8) !void {
 // OS DEPENDENT //
 //
 // NOTE: this function may only work Windows.
+/// OS-Specific Functions
+/// Opens a URL in the default browser (Windows only)
 pub fn open_url(url: []const u8) void {
     term(&[_][]const u8{ "explorer", url }) catch liberr("Failed to open URL!\n");
 }
 //
+/// Opens a file with the default application (Windows only)
 pub fn open_file(file_path: []const u8) void {
     term(&[_][]const u8{ "cmd", "/C", "start", file_path }) catch liberr("Failed to open file!\n");
 }
 
 // STRING FUNCS //
 //
+/// String Operations
+/// Compares two strings for equality
 pub fn streql(s1: []const u8, s2: []const u8) bool {
     return std.mem.eql(u8, s1, s2);
 }
@@ -131,18 +184,20 @@ pub fn streql(s1: []const u8, s2: []const u8) bool {
 // NOTE: after allocating space of returned string
 // it is recommended to use 'defer allocator.free(
 // result_string)'
+/// Concatenates two strings
+/// Memory must be freed by the caller
 pub fn strcat(allocator: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]const u8 {
     return std.mem.concat(allocator, u8, &[_][]const u8{ s1, s2 });
 }
 //
 //
 // Split string based on pattern
+/// Splits a string based on a pattern
+/// Memory must be freed by the caller
 pub fn strsplit(input: []const u8, pattern: []const u8) ![][]const u8 {
     const allocator = std.heap.page_allocator;
-
-    // Create an array to store split substrings
     var results = std.ArrayList([]const u8).init(allocator);
-    defer results.deinit();
+    errdefer results.deinit();
 
     // If delimiter is empty, return the entire input as a single item
     if (pattern.len == 0) {
@@ -175,6 +230,8 @@ pub fn strsplit(input: []const u8, pattern: []const u8) ![][]const u8 {
 
 // RANDOM NUMBERS //
 //
+/// Random Number Generation
+/// Generates random integers in the specified range
 pub fn rng_i32(min: i32, max: i32) i32 {
     const random = std.crypto.random;
     if (max - min > 0) {
@@ -213,6 +270,8 @@ pub fn rng_usize(min: usize, max: usize) usize {
 
 // SQRT SHORTCUT //
 //
+/// Mathematical Functions
+/// Calculates square root using Newton's method
 pub fn sqrt_f64(n: f64) f64 {
     if (n < 0.0) {
         liberr("Cannot square root negative float!\n");
@@ -231,33 +290,23 @@ pub fn sqrt_f64(n: f64) f64 {
     }
     return guess;
 }
-//
+
+/// Helper function for sqrt_f64
 fn abs_f64(n: f64) f64 {
     if (n < 0) {
         return n * -1.00;
     }
     return n;
 }
-//
-pub fn sqrt(x: anytype) Sqrt(@TypeOf(x)) {
-    return std.math.sqrt(x);
-}
-//
-pub fn inv_sqrt(x: anytype) Sqrt(@TypeOf(x)) {
-    return 1.00 / std.math.sqrt(x);
-}
-//
-// From Zig Lib ->
-/// Returns the return type `sqrt` will return given an operand of type `T`.
-pub fn Sqrt(comptime T: type) type {
-    return switch (@typeInfo(T)) {
-        .int => |int| @Type(.{ .int = .{ .signedness = .unsigned, .bits = (int.bits + 1) / 2 } }),
-        else => T,
-    };
+
+/// Inverse square root
+pub fn inv_sqrt(x: f64) f64 {
+    return 1.00 / sqrt_f64(x);
 }
 
 // POWER OF //
 //
+/// Power function
 pub fn pow(x: anytype, exp: usize) @TypeOf(x) {
     if (exp == 0) {
         return @as(@TypeOf(x), 1);
@@ -273,18 +322,23 @@ pub fn pow(x: anytype, exp: usize) @TypeOf(x) {
 
 // STRING TO CONSOLE //
 //
+/// Console Output
+/// Prints a string without a newline
 pub fn strout(s: []const u8) void {
     print("{s}", .{s});
 }
 //
 // NOTE: use 'log()' to print to the console,
 // with new line -- similar to println().
+/// Prints a string with a newline
 pub fn log(s: []const u8) void {
     print("{s}\n", .{s});
 }
 
 // CONSOLE INPUT //
 //
+/// Console Input
+/// Reads a line from stdin with a prompt
 pub fn cin(buf: []u8, prompt: []const u8) ![]const u8 {
     const stdin = std.io.getStdIn().reader();
     strout(prompt);
@@ -298,6 +352,9 @@ pub fn cin(buf: []u8, prompt: []const u8) ![]const u8 {
 
 // PARSE TO NUMS //
 //
+/// Number Parsing
+/// Converts strings to various numeric types
+/// Returns 0 or 0.0 if parsing fails
 pub fn str_i8(s: []const u8) i8 {
     const n = std.fmt.parseInt(i8, s, 10) catch 0;
     return n;
