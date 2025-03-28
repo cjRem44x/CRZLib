@@ -131,6 +131,8 @@ pub fn main() !void {
     defer arena.deinit();
     try testAllocator(arena.allocator(), "Arena Allocator");
 
+    // COMMENTED OUT BECAUSE OF ERRORS
+    //
     // Test Fixed Buffer Allocator
     //var buffer: [FIXED_BUFFER_SIZE]u8 = undefined;
     //var fba = FixedBufferAllocator.init(&buffer);
