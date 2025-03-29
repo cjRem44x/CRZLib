@@ -171,7 +171,7 @@ pub fn open_url(url: []const u8) void {
 /// Opens a file with the default application (Windows only)
 /// Example: open_file("document.pdf");
 pub fn open_file(file_path: []const u8) void {
-    term(&[_][]const u8{ "cmd", "/C", "start", file_path }) catch liberr("Failed to open file!\n");
+    term(&[_][]const u8{ "explorer", file_path }) catch liberr("Failed to open file!\n");
 }
 
 //=============================================================================
