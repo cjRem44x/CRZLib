@@ -439,6 +439,10 @@ pub fn strout(s: []const u8) void {
 pub fn log(s: []const u8) void {
     print("{s}\n", .{s});
 }
+//
+pub fn logn(x: anytype) void {
+    print("{}\n", .{x});
+}
 
 /// Console Input
 /// Reads a line from stdin with a prompt
