@@ -408,39 +408,127 @@ pub fn inv_sqrt_f128(n: f128) f128 {
     return y;
 }
 
-// Computing Sine
+// Computes the sine of a floating-point number (x) using the Maclaurin series expansion.
+// sin(x) ≈ x - x^3/3! + x^5/5! - x^7/7! + ... (up to n terms)
 pub fn sin_f32(x: f32) f32 {
-    // precision
+    // Number of terms in the series expansion, affecting precision
     const n = 15;
 
+    // The first term in the Maclaurin series is x itself
     var t: f32 = x;
-    var sin: f32 = t;
-    var a: f32 = 1;
+    var sin: f32 = t; // Initialize result with the first term
+    var a: f32 = 1; // Factorial tracking variable (starting at 1)
+
+    // Loop to compute the subsequent terms in the series
     for (0..n) |_| {
+        // Compute the next term: (-x^2) / ((2a) * (2a + 1))
+        // This represents the factorial denominator and sign alternation
         const mul = -x * x / ((2 * a) * (2 * a + 1));
+
+        // Multiply the previous term by mul to get the next term
         t *= mul;
+
+        // Add the computed term to the sine sum
         sin += t;
 
-        // inc a
+        // Increment a for the next factorial calculation
         a += 1;
     }
+
+    // Return the approximated sine value
     return sin;
 }
 
-// Computing Cosine
+// Computes the cosine of a floating-point number (x) using the Maclaurin series expansion.
+// cos(x) ≈ 1 - x^2/2! + x^4/4! - x^6/6! + ... (up to n terms)
 pub fn cos_f32(x: f32) f32 {
+    // Number of terms in the series expansion, affecting precision
     const n = 15;
+
+    // The first term in the Maclaurin series is 1
     var t: f32 = 1;
-    var cos: f32 = t;
-    var a: f32 = 1;
+    var cos: f32 = t; // Initialize result with the first term
+    var a: f32 = 1; // Factorial tracking variable (starting at 1)
+
+    // Loop to compute the subsequent terms in the series
     for (0..n) |_| {
+        // Compute the next term: (-x^2) / ((2a) * (2a - 1))
+        // This represents the factorial denominator and sign alternation
         const mul = -x * x / ((2 * a) * (2 * a - 1));
+
+        // Multiply the previous term by mul to get the next term
         t *= mul;
+
+        // Add the computed term to the cosine sum
         cos += t;
 
-        // inc a
+        // Increment a for the next factorial calculation
         a += 1;
     }
+
+    // Return the approximated cosine value
+    return cos;
+}
+
+// Computes the sine of a floating-point number (x) using the Maclaurin series expansion.
+// sin(x) ≈ x - x^3/3! + x^5/5! - x^7/7! + ... (up to n terms)
+pub fn sin_f64(x: f64) f64 {
+    // Number of terms in the series expansion, affecting precision
+    const n = 15;
+
+    // The first term in the Maclaurin series is x itself
+    var t: f64 = x;
+    var sin: f64 = t; // Initialize result with the first term
+    var a: f64 = 1; // Factorial tracking variable (starting at 1)
+
+    // Loop to compute the subsequent terms in the series
+    for (0..n) |_| {
+        // Compute the next term: (-x^2) / ((2a) * (2a + 1))
+        // This represents the factorial denominator and sign alternation
+        const mul = -x * x / ((2 * a) * (2 * a + 1));
+
+        // Multiply the previous term by mul to get the next term
+        t *= mul;
+
+        // Add the computed term to the sine sum
+        sin += t;
+
+        // Increment a for the next factorial calculation
+        a += 1;
+    }
+
+    // Return the approximated sine value
+    return sin;
+}
+
+// Computes the cosine of a floating-point number (x) using the Maclaurin series expansion.
+// cos(x) ≈ 1 - x^2/2! + x^4/4! - x^6/6! + ... (up to n terms)
+pub fn cos_f64(x: f64) f64 {
+    // Number of terms in the series expansion, affecting precision
+    const n = 15;
+
+    // The first term in the Maclaurin series is 1
+    var t: f64 = 1;
+    var cos: f64 = t; // Initialize result with the first term
+    var a: f64 = 1; // Factorial tracking variable (starting at 1)
+
+    // Loop to compute the subsequent terms in the series
+    for (0..n) |_| {
+        // Compute the next term: (-x^2) / ((2a) * (2a - 1))
+        // This represents the factorial denominator and sign alternation
+        const mul = -x * x / ((2 * a) * (2 * a - 1));
+
+        // Multiply the previous term by mul to get the next term
+        t *= mul;
+
+        // Add the computed term to the cosine sum
+        cos += t;
+
+        // Increment a for the next factorial calculation
+        a += 1;
+    }
+
+    // Return the approximated cosine value
     return cos;
 }
 
