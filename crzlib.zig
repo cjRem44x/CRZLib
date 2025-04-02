@@ -408,6 +408,42 @@ pub fn inv_sqrt_f128(n: f128) f128 {
     return y;
 }
 
+// Computing Sine
+pub fn sin_f32(x: f32) f32 {
+    // precision
+    const n = 15;
+
+    var t: f32 = x;
+    var sin: f32 = t;
+    var a: f32 = 1;
+    for (0..n) |_| {
+        const mul = -x * x / ((2 * a) * (2 * a + 1));
+        t *= mul;
+        sin += t;
+
+        // inc a
+        a += 1;
+    }
+    return sin;
+}
+
+// Computing Cosine
+pub fn cos_f32(x: f32) f32 {
+    const n = 15;
+    var t: f32 = 1;
+    var cos: f32 = t;
+    var a: f32 = 1;
+    for (0..n) |_| {
+        const mul = -x * x / ((2 * a) * (2 * a - 1));
+        t *= mul;
+        cos += t;
+
+        // inc a
+        a += 1;
+    }
+    return cos;
+}
+
 /// Power function
 /// Calculates x raised to the power of exp
 /// Example: const result = pow(2, 3); // returns 8

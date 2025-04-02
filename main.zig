@@ -36,7 +36,26 @@ pub fn main() !void {
     // Test Square Root and Inverse Square Root Performance
     test_sqrt_performance();
 
+    // Test trig functions
+    test_trig();
+
     print("\nAll tests completed!\n", .{});
+}
+
+fn test_trig() void {
+    const a: f32 = 3.14;
+    const b: f32 = 5.14;
+    const c: f32 = 145.678;
+
+    // Sine test
+    crz.print("The value of Sin({d}) = {d}\n", .{ a, crz.sin_f32(a) });
+    crz.print("The value of Sin({d}) = {d}\n", .{ b, crz.sin_f32(b) });
+    crz.print("The value of Sin({d}) = {d}\n", .{ c, crz.sin_f32(c) });
+
+    // Cosine test
+    crz.print("The value of Cos({d}) = {d}\n", .{ a, crz.cos_f32(a) });
+    crz.print("The value of Cos({d}) = {d}\n", .{ b, crz.cos_f32(b) });
+    crz.print("The value of Cos({d}) = {d}\n", .{ c, crz.cos_f32(c) });
 }
 
 fn test_error_reporting() void {
