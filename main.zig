@@ -52,6 +52,10 @@ fn test_trig() void {
     crz.print("The value of Sin({d}) = {d}\n", .{ b, crz.sin_f32(b) });
     crz.print("The value of Sin({d}) = {d}\n", .{ c, crz.sin_f32(c) });
 
+    crz.strout("Sleeping...\n");
+    crz.sleep_sec(2);
+    crz.sleep_ms(2000);
+
     // Cosine test
     crz.print("The value of Cos({d}) = {d}\n", .{ a, crz.cos_f32(a) });
     crz.print("The value of Cos({d}) = {d}\n", .{ b, crz.cos_f32(b) });

@@ -635,3 +635,11 @@ pub fn str_f64(s: []const u8) f64 {
 pub fn str_f128(s: []const u8) f128 {
     return std.fmt.parseFloat(f128, s) catch 0.0;
 }
+
+pub fn sleep_ms(ms: u64) void {
+    std.Thread.sleep(ms * 1_000_000);
+}
+
+pub fn sleep_sec(sec: u64) void {
+    std.Thread.sleep(sec * 1_000_000_000);
+}
