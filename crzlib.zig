@@ -37,6 +37,7 @@
 pub const std = @import("std");
 pub const print = std.debug.print;
 pub const str = []const u8;
+pub const random = std.crypto.random;
 
 //=============================================================================
 // External Dependencies
@@ -232,7 +233,6 @@ pub fn strsplit(input: []const u8, pattern: []const u8) ![][]const u8 {
 /// Generates random integers in the specified range
 /// Example: const num = rng_i32(1, 100);
 pub fn rng_i32(min: i32, max: i32) i32 {
-    const random = std.crypto.random;
     if (max - min > 0) {
         return random.intRangeAtMost(i32, min, max);
     } else {
@@ -243,7 +243,6 @@ pub fn rng_i32(min: i32, max: i32) i32 {
 /// Generates random 64-bit integers in the specified range
 /// Example: const num = rng_i64(1, 1000);
 pub fn rng_i64(min: i64, max: i64) i64 {
-    const random = std.crypto.random;
     if (max - min > 0) {
         return random.intRangeAtMost(i64, min, max);
     } else {
@@ -254,7 +253,6 @@ pub fn rng_i64(min: i64, max: i64) i64 {
 /// Generates random 128-bit integers in the specified range
 /// Example: const num = rng_i128(1, 10000);
 pub fn rng_i128(min: i128, max: i128) i128 {
-    const random = std.crypto.random;
     if (max - min > 0) {
         return random.intRangeAtMost(i128, min, max);
     } else {
@@ -265,7 +263,6 @@ pub fn rng_i128(min: i128, max: i128) i128 {
 /// Generates random usize values in the specified range
 /// Example: const num = rng_usize(0, 100);
 pub fn rng_usize(min: usize, max: usize) usize {
-    const random = std.crypto.random;
     if (max - min > 0) {
         return random.intRangeAtMost(usize, min, max);
     } else {
