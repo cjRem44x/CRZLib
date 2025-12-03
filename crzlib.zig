@@ -22,6 +22,7 @@
 
 /// CRZLib - A Utility Library for Zig
 /// Author: CJ Remillard
+/// Updated for Zig 0.15
 ///
 /// This library provides a collection of utility functions for common programming tasks
 /// including file operations, string manipulation, mathematical functions, and more.
@@ -68,7 +69,7 @@ pub fn get_args(allocator: std.mem.Allocator) ![][]const u8 {
     defer std.process.argsFree(allocator, arg_it);
 
     // Create a dynamic array to store arguments
-    var args = std.ArrayList([]const u8).init(allocator);
+    var args = std.array_list.Managed([]const u8).init(allocator);
     defer args.deinit();
 
     // Skip program name and copy remaining arguments
@@ -100,18 +101,21 @@ pub fn read_file(allocator: std.mem.Allocator, path: []const u8) ![][]const u8 {
     defer file.close();
 
     // Create a dynamic array to store lines
-    var lines = std.ArrayList([]const u8).init(allocator);
+    var lines = std.array_list.Managed([]const u8).init(allocator);
     defer lines.deinit();
 
-    // Set up buffered reading
-    var buf_reader = std.io.bufferedReader(file.reader());
-    var in_stream = buf_reader.reader();
+    // Set up buffered reading - FIXED for Zig 0.15
+    var read_buf: [4096]u8 = undefined;
+    var file_reader = file.reader(&read_buf);
+    const reader = &file_reader.interface;
 
-    // Read file line by line
-    var buf: [1024]u8 = undefined;
-    while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
+    // Read file line by line using the new API
+    while (reader.takeDelimiterExclusive('\n')) |line| {
         const line_copy = try allocator.dupe(u8, line);
         try lines.append(line_copy);
+    } else |err| switch (err) {
+        error.EndOfStream => {}, // Normal end of file
+        else => return err,
     }
 
     return lines.toOwnedSlice();
@@ -197,7 +201,7 @@ pub fn strcat(allocator: std.mem.Allocator, s1: []const u8, s2: []const u8) ![]c
 /// Example: const parts = try strsplit("a,b,c", ",");
 pub fn strsplit(input: []const u8, pattern: []const u8) ![][]const u8 {
     const allocator = std.heap.page_allocator;
-    var results = std.ArrayList([]const u8).init(allocator);
+    var results = std.array_list.Managed([]const u8).init(allocator);
     errdefer results.deinit();
 
     // Handle empty pattern case
@@ -570,9 +574,24 @@ pub fn logn(x: anytype) void {
 /// Example: var buf: [256]u8 = undefined;
 ///          const input = try cin(&buf, "Enter text: ");
 pub fn cin(buf: []u8, prompt: []const u8) ![]const u8 {
-    const stdin = std.io.getStdIn().reader();
-    strout(prompt);
-    const line = (try stdin.readUntilDelimiterOrEof(buf, '\n')) orelse return "";
+    _ = buf; // Buffer is managed internally now
+    var read_buf: [4096]u8 = undefined;
+    var stdin_reader = std.fs.File.stdin().reader(&read_buf);
+    const reader = &stdin_reader.interface;
+    
+    // Print prompt
+    var write_buf: [4096]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&write_buf);
+    const stdout = &stdout_writer.interface;
+    try stdout.writeAll(prompt);
+    try stdout.flush();
+    
+    // Read line
+    const line = reader.takeDelimiterExclusive('\n') catch |err| switch (err) {
+        error.EndOfStream => return "",
+        else => return err,
+    };
+    
     if (@import("builtin").os.tag == .windows) {
         return std.mem.trim(u8, line, "\r");
     } else {
