@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRZLib - Comprehensive Utility Library for Zig</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #e4e4e4;
+            background: #000000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #cc7a00 0%, #e68a00 100%);
+            color: #000000;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(204, 122, 0, 0.4);
+            border: 1px solid #cc7a00;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .badges {
+            margin-top: 20px;
+        }
+
+        .badges img {
+            margin: 0 5px;
+        }
+
+        nav {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            border: 1px solid #1a1a1a;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: #cc7a00;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #4ade80;
+        }
+
+        .content {
+            background: #0a0a0a;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            border: 1px solid #1a1a1a;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #cc7a00;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #cc7a00;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #4ade80;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #c9d1d9;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        p {
+            color: #c9d1d9;
+        }
+
+        pre {
+            background: #000000;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #cc7a00;
+            border: 1px solid #1a1a1a;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        .inline-code {
+            background: #000000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #4ade80;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #1a1a1a;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(204, 122, 0, 0.15) 0%, rgba(74, 222, 128, 0.1) 100%);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #cc7a00;
+            border: 1px solid #1a1a1a;
+            transition: transform 0.3s, box-shadow 0.3s, border-left-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(204, 122, 0, 0.3);
+            border-left-color: #4ade80;
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: #cc7a00;
+        }
+
+        .feature-card p {
+            color: #8b949e;
+        }
+
+        .function-list {
+            background: #000000;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #1a1a1a;
+        }
+
+        .function-item {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .function-item:last-child {
+            border-bottom: none;
+        }
+
+        .function-item p {
+            color: #8b949e;
+        }
+
+        .function-signature {
+            background: #000000;
+            color: #f8f8f2;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #1a1a1a;
+        }
+
+        .param {
+            color: #f92672;
+        }
+
+        .type {
+            color: #66d9ef;
+        }
+
+        .keyword {
+            color: #f92672;
+        }
+
+        .string {
+            color: #e6db74;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 1px solid #1a1a1a;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #1a1a1a;
+            color: #c9d1d9;
+        }
+
+        th {
+            background: #cc7a00;
+            color: #000000;
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background: rgba(204, 122, 0, 0.15);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8b949e;
+            border-top: 2px solid #cc7a00;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #4ade80;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #cc7a00;
+        }
+
+        .install-section {
+            background: rgba(74, 222, 128, 0.08);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4ade80;
+            border: 1px solid #1a1a1a;
+        }
+
+        .note {
+            background: rgba(204, 122, 0, 0.15);
+            border-left: 4px solid #cc7a00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .note strong {
+            color: #cc7a00;
+        }
+
+        .warning {
+            background: rgba(248, 81, 73, 0.15);
+            border-left: 4px solid #f85149;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .warning strong {
+            color: #f85149;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin: 5px 0;
+            color: #8b949e;
+        }
+
+        a {
+            color: #4ade80;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #cc7a00;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CRZLib</h1>
+            <p>A Comprehensive Utility Library for Zig</p>
+            <div class="badges">
+                <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
+                <img src="https://img.shields.io/badge/Zig-0.13%2B-orange.svg" alt="Zig 0.13+">
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#file-ops">File Operations</a></li>
+                <li><a href="#string-ops">String Operations</a></li>
+                <li><a href="#math">Mathematics</a></li>
+                <li><a href="#random">Random Numbers</a></li>
+                <li><a href="#console">Console I/O</a></li>
+                <li><a href="#parsing">Number Parsing</a></li>
+                <li><a href="#system">System Operations</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <section id="overview">
+                <h2>Overview</h2>
+                <p>CRZLib is a comprehensive utility library for Zig that simplifies common programming tasks. It provides a collection of well-tested, memory-safe functions for file operations, string manipulation, mathematical calculations, and more.</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Memory Safe</h4>
+                        <p>All operations are designed with memory safety in mind, properly managing allocations and preventing leaks.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Performance Optimized</h4>
+                        <p>Uses fast algorithms and minimizes allocations for optimal performance in production environments.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Cross-Platform</h4>
+                        <p>Works across different platforms with special support for Windows-specific operations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Easy to Use</h4>
+                        <p>Simple, intuitive API that follows Zig conventions and best practices.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="installation">
+                <h2>Installation</h2>
+
+                <div class="install-section">
+                    <h3>Using Zig's Package Manager (Recommended)</h3>
+                    <p>Add CRZLib to your <span class="inline-code">build.zig.zon</span>:</p>
+                    <pre><code>.{
+    .name = "my-project",
+    .version = "0.1.0",
+    .dependencies = .{
+        .crzlib = .{
+            .url = "https://github.com/cjRem44x/CRZLib/archive/refs/tags/v0.1.0.tar.gz",
+            // Add the hash after first build attempt
+        },
+    },
+}</code></pre>
+
+                    <p>Then add to your <span class="inline-code">build.zig</span>:</p>
+                    <pre><code>const crzlib_dep = b.dependency("crzlib", .{
+    .target = target,
+    .optimize = optimize,
+});
+exe.root_module.addImport("crzlib", crzlib_dep.module("crzlib"));</code></pre>
+                </div>
+
+                <div class="install-section">
+                    <h3>Manual Installation</h3>
+                    <p>Clone the repository:</p>
+                    <pre><code>git clone https://github.com/cjRem44x/CRZLib.git</code></pre>
+
+                    <p>Add to your <span class="inline-code">build.zig</span>:</p>
+                    <pre><code>const crzlib_module = b.addModule("crzlib", .{
+    .root_source_file = b.path("path/to/CRZLib/src/crzlib.zig"),
+});
+exe.root_module.addImport("crzlib", crzlib_module);</code></pre>
+                </div>
+            </section>
+
+            <section id="features">
+                <h2>Features Overview</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Functions</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>File Operations</td>
+                            <td>3</td>
+                            <td>Read files, check file/directory existence</td>
+                        </tr>
+                        <tr>
+                            <td>String Operations</td>
+                            <td>3</td>
+                            <td>Compare, concatenate, and split strings</td>
+                        </tr>
+                        <tr>
+                            <td>Math Functions</td>
+                            <td>13</td>
+                            <td>Square root, inverse square root, trigonometry, power</td>
+                        </tr>
+                        <tr>
+                            <td>Random Numbers</td>
+                            <td>4</td>
+                            <td>Generate random integers (i32, i64, i128, usize)</td>
+                        </tr>
+                        <tr>
+                            <td>Console I/O</td>
+                            <td>4</td>
+                            <td>Input/output with formatted printing</td>
+                        </tr>
+                        <tr>
+                            <td>Number Parsing</td>
+                            <td>8</td>
+                            <td>String to int/float conversion (i8-i128, f32-f128)</td>
+                        </tr>
+                        <tr>
+                            <td>System Operations</td>
+                            <td>5</td>
+                            <td>Command execution, argument parsing, file/URL opening</td>
+                        </tr>
+                        <tr>
+                            <td>Threading</td>
+                            <td>2</td>
+                            <td>Thread sleep utilities (milliseconds, seconds)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="file-ops">
+                <h2>File System Operations</h2>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>read_file</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> read_file(allocator: std.mem.Allocator, path: []<span class="keyword">const</span> <span class="type">u8</span>) ![][]<span class="keyword">const</span> <span class="type">u8</span>
+                        </div>
+                        <p>Reads a file and returns its contents as an array of strings (one per line).</p>
+                        <div class="note">
+                            <strong>Note:</strong> Memory must be freed by the caller using <span class="inline-code">allocator.free()</span>
+                        </div>
+                        <pre><code>const std = @import("std");
+const crz = @import("crzlib");
+
+pub fn main() !void {
+    const allocator = std.heap.page_allocator;
+    const lines = try crz.read_file(allocator, "input.txt");
+    defer allocator.free(lines);
+
+    for (lines) |line| {
+        crz.log(line);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>is_file</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> is_file(path: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">bool</span>
+                        </div>
+                        <p>Returns <span class="inline-code">true</span> if the path points to a file.</p>
+                        <pre><code>if (crz.is_file("test.txt")) {
+    crz.log("File exists!");
+}</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>is_dir</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> is_dir(path: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">bool</span>
+                        </div>
+                        <p>Returns <span class="inline-code">true</span> if the path points to a directory.</p>
+                        <pre><code>if (crz.is_dir("my_folder")) {
+    crz.log("Directory exists!");
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="string-ops">
+                <h2>String Operations</h2>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>streql</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> streql(s1: []<span class="keyword">const</span> <span class="type">u8</span>, s2: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">bool</span>
+                        </div>
+                        <p>Compares two strings for equality.</p>
+                        <pre><code>if (crz.streql("hello", "hello")) {
+    crz.log("Strings are equal!");
+}</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>strcat</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> strcat(allocator: std.mem.Allocator, s1: []<span class="keyword">const</span> <span class="type">u8</span>, s2: []<span class="keyword">const</span> <span class="type">u8</span>) ![]<span class="keyword">const</span> <span class="type">u8</span>
+                        </div>
+                        <p>Concatenates two strings.</p>
+                        <div class="note">
+                            <strong>Note:</strong> Memory must be freed by the caller using <span class="inline-code">allocator.free()</span>
+                        </div>
+                        <pre><code>const allocator = std.heap.page_allocator;
+const result = try crz.strcat(allocator, "Hello ", "World");
+defer allocator.free(result);
+crz.log(result); // Output: Hello World</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>strsplit</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> strsplit(input: []<span class="keyword">const</span> <span class="type">u8</span>, pattern: []<span class="keyword">const</span> <span class="type">u8</span>) ![][]<span class="keyword">const</span> <span class="type">u8</span>
+                        </div>
+                        <p>Splits a string based on a pattern.</p>
+                        <div class="note">
+                            <strong>Note:</strong> Memory must be freed by the caller
+                        </div>
+                        <pre><code>const parts = try crz.strsplit("a,b,c", ",");
+defer allocator.free(parts);
+
+for (parts) |part| {
+    crz.log(part); // Output: a, b, c
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="math">
+                <h2>Mathematical Functions</h2>
+
+                <h3>Square Root Functions</h3>
+                <p>Calculates square roots using the Newton-Raphson method for high precision.</p>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>sqrt_f32 / sqrt_f64 / sqrt_f128</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> sqrt_f32(n: <span class="type">f32</span>) <span class="type">f32</span><br>
+                            <span class="keyword">pub fn</span> sqrt_f64(n: <span class="type">f64</span>) <span class="type">f64</span><br>
+                            <span class="keyword">pub fn</span> sqrt_f128(n: <span class="type">f128</span>) <span class="type">f128</span>
+                        </div>
+                        <p>Computes the square root of a number with different precision levels.</p>
+                        <pre><code>const root32 = crz.sqrt_f32(16.0);  // 4.0
+const root64 = crz.sqrt_f64(25.0);  // 5.0
+const root128 = crz.sqrt_f128(100.0); // 10.0</code></pre>
+                    </div>
+                </div>
+
+                <h3>Inverse Square Root Functions</h3>
+                <p>Fast inverse square root calculation using bit manipulation and Newton-Raphson refinement.</p>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>inv_sqrt_f32 / inv_sqrt_f64 / inv_sqrt_f128</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> inv_sqrt_f32(x: <span class="type">f32</span>) <span class="type">f32</span><br>
+                            <span class="keyword">pub fn</span> inv_sqrt_f64(n: <span class="type">f64</span>) <span class="type">f64</span><br>
+                            <span class="keyword">pub fn</span> inv_sqrt_f128(n: <span class="type">f128</span>) <span class="type">f128</span>
+                        </div>
+                        <p>Computes 1/√x efficiently using the famous fast inverse square root algorithm.</p>
+                        <pre><code>const inv = crz.inv_sqrt_f64(16.0); // 0.25 (1/4)</code></pre>
+                    </div>
+                </div>
+
+                <h3>Trigonometric Functions</h3>
+                <p>Sine and cosine functions using Maclaurin series expansion for high accuracy.</p>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>sin_f32 / sin_f64</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> sin_f32(x: <span class="type">f32</span>) <span class="type">f32</span><br>
+                            <span class="keyword">pub fn</span> sin_f64(x: <span class="type">f64</span>) <span class="type">f64</span>
+                        </div>
+                        <p>Computes the sine of x using Maclaurin series expansion (15 terms).</p>
+                        <pre><code>const sine = crz.sin_f64(0.0); // 0.0</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>cos_f32 / cos_f64</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> cos_f32(x: <span class="type">f32</span>) <span class="type">f32</span><br>
+                            <span class="keyword">pub fn</span> cos_f64(x: <span class="type">f64</span>) <span class="type">f64</span>
+                        </div>
+                        <p>Computes the cosine of x using Maclaurin series expansion (15 terms).</p>
+                        <pre><code>const cosine = crz.cos_f64(0.0); // 1.0</code></pre>
+                    </div>
+                </div>
+
+                <h3>Power Function</h3>
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>pow</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> pow(x: <span class="keyword">anytype</span>, exp: <span class="type">usize</span>) @TypeOf(x)
+                        </div>
+                        <p>Calculates x raised to the power of exp. Works with any numeric type.</p>
+                        <pre><code>const result = crz.pow(2, 3);     // 8
+const result2 = crz.pow(2.5, 2);  // 6.25</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>abs_f64</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> abs_f64(n: <span class="type">f64</span>) <span class="type">f64</span>
+                        </div>
+                        <p>Returns the absolute value of a 64-bit float.</p>
+                        <pre><code>const absolute = crz.abs_f64(-42.5); // 42.5</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="random">
+                <h2>Random Number Generation</h2>
+                <p>Secure random number generation using cryptographically secure random number generator.</p>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>rng_i32</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> rng_i32(min: <span class="type">i32</span>, max: <span class="type">i32</span>) <span class="type">i32</span>
+                        </div>
+                        <p>Generates a random 32-bit integer in the range [min, max].</p>
+                        <pre><code>const random_num = crz.rng_i32(1, 100); // Random number between 1 and 100</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>rng_i64</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> rng_i64(min: <span class="type">i64</span>, max: <span class="type">i64</span>) <span class="type">i64</span>
+                        </div>
+                        <p>Generates a random 64-bit integer in the range [min, max].</p>
+                        <pre><code>const random_num = crz.rng_i64(1, 10000);</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>rng_i128</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> rng_i128(min: <span class="type">i128</span>, max: <span class="type">i128</span>) <span class="type">i128</span>
+                        </div>
+                        <p>Generates a random 128-bit integer in the range [min, max].</p>
+                        <pre><code>const random_num = crz.rng_i128(1, 1000000);</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>rng_usize</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> rng_usize(min: <span class="type">usize</span>, max: <span class="type">usize</span>) <span class="type">usize</span>
+                        </div>
+                        <p>Generates a random usize value in the range [min, max].</p>
+                        <pre><code>const random_index = crz.rng_usize(0, array.len - 1);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="console">
+                <h2>Console I/O Operations</h2>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>log</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> log(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">void</span>
+                        </div>
+                        <p>Prints a string with a newline.</p>
+                        <pre><code>crz.log("Hello, World!");</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>strout</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> strout(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">void</span>
+                        </div>
+                        <p>Prints a string without a newline.</p>
+                        <pre><code>crz.strout("Enter name: ");</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>logn</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> logn(x: <span class="keyword">anytype</span>) <span class="type">void</span>
+                        </div>
+                        <p>Prints any value with a newline. Works with integers, floats, booleans, etc.</p>
+                        <pre><code>crz.logn(42);
+crz.logn(3.14);
+crz.logn(true);</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>cin</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> cin(buf: []<span class="type">u8</span>, prompt: []<span class="keyword">const</span> <span class="type">u8</span>) ![]<span class="keyword">const</span> <span class="type">u8</span>
+                        </div>
+                        <p>Reads a line from stdin with an optional prompt. Handles Windows line endings automatically.</p>
+                        <pre><code>var buf: [256]u8 = undefined;
+const input = try crz.cin(&buf, "Enter your name: ");
+crz.log(input);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="parsing">
+                <h2>Number Parsing</h2>
+                <p>Safe number parsing functions that return default values on parse failure.</p>
+
+                <h3>String to Integer</h3>
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>str_i8 / str_i16 / str_i32 / str_i64 / str_i128</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> str_i8(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">i8</span><br>
+                            <span class="keyword">pub fn</span> str_i16(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">i16</span><br>
+                            <span class="keyword">pub fn</span> str_i32(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">i32</span><br>
+                            <span class="keyword">pub fn</span> str_i64(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">i64</span><br>
+                            <span class="keyword">pub fn</span> str_i128(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">i128</span>
+                        </div>
+                        <p>Converts string to integer. Returns 0 if parsing fails.</p>
+                        <pre><code>const num = crz.str_i32("42");      // 42
+const invalid = crz.str_i32("abc"); // 0</code></pre>
+                    </div>
+                </div>
+
+                <h3>String to Float</h3>
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>str_f32 / str_f64 / str_f128</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> str_f32(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">f32</span><br>
+                            <span class="keyword">pub fn</span> str_f64(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">f64</span><br>
+                            <span class="keyword">pub fn</span> str_f128(s: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">f128</span>
+                        </div>
+                        <p>Converts string to float. Returns 0.0 if parsing fails.</p>
+                        <pre><code>const num = crz.str_f64("42.5");    // 42.5
+const invalid = crz.str_f64("xyz"); // 0.0</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="system">
+                <h2>System Operations</h2>
+
+                <div class="function-list">
+                    <div class="function-item">
+                        <h4>get_args</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> get_args(allocator: std.mem.Allocator) ![][]<span class="keyword">const</span> <span class="type">u8</span>
+                        </div>
+                        <p>Returns an array of command line arguments (excluding program name).</p>
+                        <div class="note">
+                            <strong>Note:</strong> Memory must be freed by the caller
+                        </div>
+                        <pre><code>const args = try crz.get_args(allocator);
+defer allocator.free(args);
+
+for (args) |arg| {
+    crz.log(arg);
+}</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>term</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> term(argv: []<span class="keyword">const</span> []<span class="keyword">const</span> <span class="type">u8</span>) !<span class="type">void</span>
+                        </div>
+                        <p>Executes a command in the terminal and prints its output.</p>
+                        <pre><code>try crz.term(&[_][]const u8{"ls", "-la"});</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>c_system</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> c_system(s: [*c]<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">void</span>
+                        </div>
+                        <p>Executes a system command using the C standard library.</p>
+                        <pre><code>crz.c_system("dir");</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>open_url (Windows only)</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> open_url(url: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">void</span>
+                        </div>
+                        <p>Opens a URL in the default browser.</p>
+                        <div class="warning">
+                            <strong>Windows Only:</strong> This function is designed for Windows systems.
+                        </div>
+                        <pre><code>crz.open_url("https://example.com");</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>open_file (Windows only)</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> open_file(file_path: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">void</span>
+                        </div>
+                        <p>Opens a file with the default application.</p>
+                        <div class="warning">
+                            <strong>Windows Only:</strong> This function is designed for Windows systems.
+                        </div>
+                        <pre><code>crz.open_file("document.pdf");</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>sleep_ms / sleep_sec</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> sleep_ms(ms: <span class="type">u64</span>) <span class="type">void</span><br>
+                            <span class="keyword">pub fn</span> sleep_sec(sec: <span class="type">u64</span>) <span class="type">void</span>
+                        </div>
+                        <p>Pauses execution for the specified duration.</p>
+                        <pre><code>crz.sleep_ms(500);  // Sleep for 500 milliseconds
+crz.sleep_sec(2);   // Sleep for 2 seconds</code></pre>
+                    </div>
+
+                    <div class="function-item">
+                        <h4>liberr</h4>
+                        <div class="function-signature">
+                            <span class="keyword">pub fn</span> liberr(report: []<span class="keyword">const</span> <span class="type">u8</span>) <span class="type">void</span>
+                        </div>
+                        <p>Prints formatted error messages with the CRZLib prefix.</p>
+                        <pre><code>crz.liberr("File not found");</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="examples">
+                <h2>Complete Examples</h2>
+
+                <h3>File Processing Example</h3>
+                <pre><code>const std = @import("std");
+const crz = @import("crzlib");
+
+pub fn main() !void {
+    const allocator = std.heap.page_allocator;
+
+    // Read a file
+    if (crz.is_file("input.txt")) {
+        const lines = try crz.read_file(allocator, "input.txt");
+        defer allocator.free(lines);
+
+        crz.log("File contents:");
+        for (lines) |line| {
+            crz.log(line);
+        }
+    } else {
+        crz.liberr("File not found!");
+    }
+}</code></pre>
+
+                <h3>String Manipulation Example</h3>
+                <pre><code>const std = @import("std");
+const crz = @import("crzlib");
+
+pub fn main() !void {
+    const allocator = std.heap.page_allocator;
+
+    // Concatenate strings
+    const greeting = try crz.strcat(allocator, "Hello, ", "World!");
+    defer allocator.free(greeting);
+    crz.log(greeting);
+
+    // Split strings
+    const csv = "apple,banana,orange";
+    const fruits = try crz.strsplit(csv, ",");
+    defer allocator.free(fruits);
+
+    for (fruits) |fruit| {
+        crz.log(fruit);
+    }
+}</code></pre>
+
+                <h3>Mathematical Calculations</h3>
+                <pre><code>const crz = @import("crzlib");
+
+pub fn main() void {
+    // Square roots
+    const sqrt = crz.sqrt_f64(16.0);
+    crz.logn(sqrt); // 4.0
+
+    // Trigonometry
+    const sine = crz.sin_f64(0.0);
+    const cosine = crz.cos_f64(0.0);
+    crz.logn(sine);   // 0.0
+    crz.logn(cosine); // 1.0
+
+    // Power
+    const power = crz.pow(2, 10);
+    crz.logn(power); // 1024
+
+    // Random numbers
+    const random = crz.rng_i32(1, 100);
+    crz.logn(random);
+}</code></pre>
+
+                <h3>Interactive Console Application</h3>
+                <pre><code>const std = @import("std");
+const crz = @import("crzlib");
+
+pub fn main() !void {
+    var buf: [256]u8 = undefined;
+
+    crz.log("Welcome to CRZLib Demo!");
+
+    const name = try crz.cin(&buf, "Enter your name: ");
+    const greeting = try crz.strcat(std.heap.page_allocator, "Hello, ", name);
+    defer std.heap.page_allocator.free(greeting);
+
+    crz.log(greeting);
+
+    const age_str = try crz.cin(&buf, "Enter your age: ");
+    const age = crz.str_i32(age_str);
+
+    crz.strout("You are ");
+    crz.logn(age);
+    crz.log(" years old!");
+}</code></pre>
+            </section>
+
+            <section id="building">
+                <h2>Building and Testing</h2>
+
+                <h3>Run Tests</h3>
+                <pre><code>zig build test</code></pre>
+
+                <h3>Build Examples</h3>
+                <pre><code># Build all examples
+zig build examples
+
+# Run specific examples
+zig build run-file_ops
+zig build run-string_ops
+zig build run-math_funcs
+zig build run-benchmark</code></pre>
+
+                <h3>Available Examples</h3>
+                <ul>
+                    <li><span class="inline-code">file_ops.zig</span> - Demonstrates file operations</li>
+                    <li><span class="inline-code">string_ops.zig</span> - Shows string manipulation</li>
+                    <li><span class="inline-code">math_funcs.zig</span> - Mathematical function examples</li>
+                    <li><span class="inline-code">benchmark.zig</span> - Performance benchmarking</li>
+                </ul>
+            </section>
+
+            <section id="error-handling">
+                <h2>Error Handling</h2>
+                <p>CRZLib follows Zig's error handling conventions:</p>
+                <ul>
+                    <li>All functions that can fail return error unions</li>
+                    <li>Memory operations are safe and properly managed</li>
+                    <li>File operations include proper error checking</li>
+                    <li>String operations handle edge cases gracefully</li>
+                    <li>Number parsing returns safe default values (0 or 0.0)</li>
+                </ul>
+
+                <div class="note">
+                    <strong>Best Practice:</strong> Always handle errors using Zig's <span class="inline-code">try</span> or <span class="inline-code">catch</span> keywords. Free allocated memory using <span class="inline-code">defer</span> to prevent leaks.
+                </div>
+            </section>
+
+            <section id="performance">
+                <h2>Performance Considerations</h2>
+                <ul>
+                    <li>Mathematical functions use optimized algorithms (Newton-Raphson, Fast Inverse Square Root)</li>
+                    <li>String operations minimize allocations where possible</li>
+                    <li>File reading uses buffered I/O for efficiency</li>
+                    <li>Random number generation uses cryptographically secure methods</li>
+                    <li>All operations are designed for production use</li>
+                </ul>
+            </section>
+
+            <section id="contributing">
+                <h2>Contributing</h2>
+                <p>Contributions are welcome! Please see <a href="https://github.com/cjRem44x/CRZLib/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for guidelines.</p>
+            </section>
+
+            <section id="license">
+                <h2>License</h2>
+                <p>This project is licensed under the MIT License. See the LICENSE file for details.</p>
+            </section>
+        </div>
+
+        <footer>
+            <p><strong>CRZLib</strong> - Created by CJ Remillard</p>
+            <p>Documentation generated for Zig 0.13+</p>
+            <p><a href="https://github.com/cjRem44x/CRZLib">GitHub Repository</a></p>
+        </footer>
+    </div>
+</body>
+</html>
