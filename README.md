@@ -1,6 +1,8 @@
 # CRZLib
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Zig Version](https://img.shields.io/badge/Zig-0.13%2B-orange.svg)](https://ziglang.org/)
+[![CI](https://github.com/cjRem44x/CRZLib/workflows/CI/badge.svg)](https://github.com/cjRem44x/CRZLib/actions)
 
 A comprehensive utility library for Zig that simplifies common programming tasks.
 
@@ -42,14 +44,44 @@ A comprehensive utility library for Zig that simplifies common programming tasks
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/CRZLib.git
+### Using Zig's Package Manager (Recommended)
+
+1. Add CRZLib to your `build.zig.zon`:
+```zig
+.{
+    .name = "my-project",
+    .version = "0.1.0",
+    .dependencies = .{
+        .crzlib = .{
+            .url = "https://github.com/cjRem44x/CRZLib/archive/refs/tags/v0.1.0.tar.gz",
+            // Add the hash after first build attempt
+        },
+    },
+}
 ```
 
-2. Add to your build.zig:
+2. Add to your `build.zig`:
 ```zig
-const crzlib = @import("path/to/CRZLib/crzlib.zig");
+const crzlib_dep = b.dependency("crzlib", .{
+    .target = target,
+    .optimize = optimize,
+});
+exe.root_module.addImport("crzlib", crzlib_dep.module("crzlib"));
+```
+
+### Manual Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/cjRem44x/CRZLib.git
+```
+
+2. Add to your `build.zig`:
+```zig
+const crzlib_module = b.addModule("crzlib", .{
+    .root_source_file = b.path("path/to/CRZLib/src/crzlib.zig"),
+});
+exe.root_module.addImport("crzlib", crzlib_module);
 ```
 
 ## Usage Examples
@@ -57,7 +89,7 @@ const crzlib = @import("path/to/CRZLib/crzlib.zig");
 ### File Operations
 ```zig
 const std = @import("std");
-const crz = @import("crzlib.zig");
+const crz = @import("crzlib");
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
@@ -73,7 +105,7 @@ pub fn main() !void {
 ### String Operations
 ```zig
 const std = @import("std");
-const crz = @import("crzlib.zig");
+const crz = @import("crzlib");
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
@@ -95,7 +127,7 @@ pub fn main() !void {
 
 ### Mathematical Functions
 ```zig
-const crz = @import("crzlib.zig");
+const crz = @import("crzlib");
 
 pub fn main() void {
     // Square root
@@ -114,7 +146,7 @@ pub fn main() void {
 
 ### Console I/O
 ```zig
-const crz = @import("crzlib.zig");
+const crz = @import("crzlib");
 
 pub fn main() !void {
     var buf: [256]u8 = undefined;
@@ -133,7 +165,7 @@ pub fn main() !void {
 
 ### Number Parsing
 ```zig
-const crz = @import("crzlib.zig");
+const crz = @import("crzlib");
 
 pub fn main() void {
     // Integer parsing
@@ -159,9 +191,36 @@ The library is designed for efficiency:
 - File operations include proper error checking
 - String operations handle edge cases
 
+## Building and Testing
+
+```bash
+# Run tests
+zig build test
+
+# Build all examples
+zig build examples
+
+# Run a specific example
+zig build run-file_ops
+zig build run-string_ops
+zig build run-math_funcs
+zig build run-benchmark
+
+# Generate documentation
+zig build docs
+```
+
+## Examples
+
+Check out the [examples](examples/) directory for comprehensive usage examples:
+- `file_ops.zig` - File operations
+- `string_ops.zig` - String manipulation
+- `math_funcs.zig` - Mathematical functions
+- `benchmark.zig` - Allocator benchmarking
+
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 

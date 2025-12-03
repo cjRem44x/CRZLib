@@ -27,7 +27,6 @@
 /// Tested Allocators:
 /// - Page Allocator: The default system allocator
 /// - Arena Allocator: Fast for LIFO allocations
-/// - Fixed Buffer Allocator: Fast but with fixed size limit
 /// - General Purpose Allocator: Balanced performance and features
 ///
 /// The test performs multiple iterations of allocating and freeing memory blocks
@@ -38,14 +37,12 @@ const time = std.time;
 const Allocator = std.mem.Allocator;
 const page_allocator = std.heap.page_allocator;
 const ArenaAllocator = std.heap.ArenaAllocator;
-const FixedBufferAllocator = std.heap.FixedBufferAllocator;
 const GeneralPurposeAllocator = std.heap.GeneralPurposeAllocator;
 
 // Test Configuration
 const NUM_ITERATIONS = 1000; // Increased for more accurate measurements
 const NUM_ALLOCATIONS = 100; // Keep reasonable to prevent memory issues
 const ALLOC_SIZE = 64; // Keep small for quick allocations
-const FIXED_BUFFER_SIZE = 1024 * 1024; // 1MB buffer for Fixed Buffer Allocator
 
 /// Test function that benchmarks an allocator's performance
 /// Parameters:
@@ -57,22 +54,21 @@ fn testAllocator(allocator: Allocator, name: []const u8) !void {
 
     // Warm-up phase
     print("Warming up...\n", .{});
-    var warmup_allocations = std.ArrayList([]u8).init(allocator);
-    defer warmup_allocations.deinit();
+    var warmup_allocations: [10][]u8 = undefined;
 
-    for (0..10) |_| {
+    for (0..10) |i| {
         const ptr = try allocator.alloc(u8, ALLOC_SIZE);
-        try warmup_allocations.append(ptr);
+        warmup_allocations[i] = ptr;
     }
 
-    for (warmup_allocations.items) |ptr| {
+    for (warmup_allocations) |ptr| {
         allocator.free(ptr);
     }
 
     // Main test phase
     print("Running main test...\n", .{});
-    var allocations = std.ArrayList([]u8).init(allocator);
-    defer allocations.deinit();
+    var allocations = try allocator.alloc([]u8, NUM_ALLOCATIONS);
+    defer allocator.free(allocations);
 
     const start_time = time.nanoTimestamp();
 
@@ -81,19 +77,18 @@ fn testAllocator(allocator: Allocator, name: []const u8) !void {
             print("Progress: {d}%\n", .{(i * 100) / NUM_ITERATIONS});
         }
 
-        for (0..NUM_ALLOCATIONS) |_| {
+        for (0..NUM_ALLOCATIONS) |j| {
             const ptr = allocator.alloc(u8, ALLOC_SIZE) catch |err| {
                 print("Allocation failed: {s}\n", .{@errorName(err)});
                 return err;
             };
-            try allocations.append(ptr);
+            allocations[j] = ptr;
         }
 
         // Free all allocations
-        for (allocations.items) |ptr| {
+        for (allocations) |ptr| {
             allocator.free(ptr);
         }
-        allocations.clearRetainingCapacity();
     }
 
     const end_time = time.nanoTimestamp();
@@ -120,7 +115,6 @@ pub fn main() !void {
     print("  Iterations: {d}\n", .{NUM_ITERATIONS});
     print("  Allocations per iteration: {d}\n", .{NUM_ALLOCATIONS});
     print("  Allocation size: {d} bytes\n", .{ALLOC_SIZE});
-    print("  Fixed buffer size: {d} bytes\n", .{FIXED_BUFFER_SIZE});
     print("\n", .{});
 
     // Test Page Allocator
@@ -130,13 +124,6 @@ pub fn main() !void {
     var arena = ArenaAllocator.init(page_allocator);
     defer arena.deinit();
     try testAllocator(arena.allocator(), "Arena Allocator");
-
-    // COMMENTED OUT BECAUSE OF ERRORS
-    //
-    // Test Fixed Buffer Allocator
-    //var buffer: [FIXED_BUFFER_SIZE]u8 = undefined;
-    //var fba = FixedBufferAllocator.init(&buffer);
-    //try testAllocator(fba.allocator(), "Fixed Buffer Allocator");
 
     // Test General Purpose Allocator
     var gpa = GeneralPurposeAllocator(.{}){};

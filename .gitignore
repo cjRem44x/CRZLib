@@ -47,4 +47,11 @@ coverage/
 
 # Dependencies
 deps/
-vendor/ 
+vendor/
+
+# Documentation output
+docs/
+zig-out/docs/
+
+# Lock files
+*.lock
