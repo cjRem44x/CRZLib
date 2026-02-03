@@ -236,41 +236,41 @@ pub fn strsplit(input: []const u8, pattern: []const u8) ![][]const u8 {
 /// Random Number Generation
 /// Generates random integers in the specified range
 /// Example: const num = rng_i32(1, 100);
-pub fn rng_i32(min: i32, max: i32) i32 {
-    if (max - min > 0) {
-        return random.intRangeAtMost(i32, min, max);
+pub fn rng_i32(min_val: i32, max_val: i32) i32 {
+    if (max_val - min_val > 0) {
+        return random.intRangeAtMost(i32, min_val, max_val);
     } else {
-        return min;
+        return min_val;
     }
 }
 
 /// Generates random 64-bit integers in the specified range
 /// Example: const num = rng_i64(1, 1000);
-pub fn rng_i64(min: i64, max: i64) i64 {
-    if (max - min > 0) {
-        return random.intRangeAtMost(i64, min, max);
+pub fn rng_i64(min_val: i64, max_val: i64) i64 {
+    if (max_val - min_val > 0) {
+        return random.intRangeAtMost(i64, min_val, max_val);
     } else {
-        return min;
+        return min_val;
     }
 }
 
 /// Generates random 128-bit integers in the specified range
 /// Example: const num = rng_i128(1, 10000);
-pub fn rng_i128(min: i128, max: i128) i128 {
-    if (max - min > 0) {
-        return random.intRangeAtMost(i128, min, max);
+pub fn rng_i128(min_val: i128, max_val: i128) i128 {
+    if (max_val - min_val > 0) {
+        return random.intRangeAtMost(i128, min_val, max_val);
     } else {
-        return min;
+        return min_val;
     }
 }
 
 /// Generates random usize values in the specified range
 /// Example: const num = rng_usize(0, 100);
-pub fn rng_usize(min: usize, max: usize) usize {
-    if (max - min > 0) {
-        return random.intRangeAtMost(usize, min, max);
+pub fn rng_usize(min_val: usize, max_val: usize) usize {
+    if (max_val - min_val > 0) {
+        return random.intRangeAtMost(usize, min_val, max_val);
     } else {
-        return min;
+        return min_val;
     }
 }
 
@@ -658,4 +658,482 @@ pub fn sleep_ms(ms: u64) void {
 
 pub fn sleep_sec(sec: u64) void {
     std.Thread.sleep(sec * 1_000_000_000);
+}
+
+//=============================================================================
+// Additional String Operations
+//=============================================================================
+/// Trims leading and trailing whitespace from a string
+/// Example: const trimmed = trim("  hello  "); // "hello"
+pub fn trim(s: []const u8) []const u8 {
+    return std.mem.trim(u8, s, " \t\n\r");
+}
+
+/// Trims only leading whitespace from a string
+/// Example: const trimmed = trim_left("  hello"); // "hello"
+pub fn trim_left(s: []const u8) []const u8 {
+    return std.mem.trimLeft(u8, s, " \t\n\r");
+}
+
+/// Trims only trailing whitespace from a string
+/// Example: const trimmed = trim_right("hello  "); // "hello"
+pub fn trim_right(s: []const u8) []const u8 {
+    return std.mem.trimRight(u8, s, " \t\n\r");
+}
+
+/// Converts a string to uppercase
+/// Memory must be freed by the caller using allocator.free()
+/// Example: const upper = try to_upper(allocator, "hello"); // "HELLO"
+pub fn to_upper(allocator: std.mem.Allocator, s: []const u8) ![]u8 {
+    const result = try allocator.alloc(u8, s.len);
+    for (s, 0..) |c, i| {
+        result[i] = if (c >= 'a' and c <= 'z') c - 32 else c;
+    }
+    return result;
+}
+
+/// Converts a string to lowercase
+/// Memory must be freed by the caller using allocator.free()
+/// Example: const lower = try to_lower(allocator, "HELLO"); // "hello"
+pub fn to_lower(allocator: std.mem.Allocator, s: []const u8) ![]u8 {
+    const result = try allocator.alloc(u8, s.len);
+    for (s, 0..) |c, i| {
+        result[i] = if (c >= 'A' and c <= 'Z') c + 32 else c;
+    }
+    return result;
+}
+
+/// Checks if a string contains a substring
+/// Example: if (contains("hello world", "world")) { ... }
+pub fn contains(haystack: []const u8, needle: []const u8) bool {
+    return std.mem.indexOf(u8, haystack, needle) != null;
+}
+
+/// Checks if a string starts with the given prefix
+/// Example: if (starts_with("hello world", "hello")) { ... }
+pub fn starts_with(s: []const u8, prefix: []const u8) bool {
+    return std.mem.startsWith(u8, s, prefix);
+}
+
+/// Checks if a string ends with the given suffix
+/// Example: if (ends_with("hello.txt", ".txt")) { ... }
+pub fn ends_with(s: []const u8, suffix: []const u8) bool {
+    return std.mem.endsWith(u8, s, suffix);
+}
+
+/// Replaces all occurrences of a pattern with replacement
+/// Memory must be freed by the caller using allocator.free()
+/// Example: const result = try replace(allocator, "hello world", "world", "zig");
+pub fn replace(allocator: std.mem.Allocator, s: []const u8, pattern: []const u8, replacement: []const u8) ![]u8 {
+    if (pattern.len == 0) {
+        return allocator.dupe(u8, s);
+    }
+
+    var result = std.array_list.Managed(u8).init(allocator);
+    errdefer result.deinit();
+
+    var i: usize = 0;
+    while (i < s.len) {
+        if (i + pattern.len <= s.len and std.mem.eql(u8, s[i .. i + pattern.len], pattern)) {
+            try result.appendSlice(replacement);
+            i += pattern.len;
+        } else {
+            try result.append(s[i]);
+            i += 1;
+        }
+    }
+
+    return result.toOwnedSlice();
+}
+
+/// Repeats a string n times
+/// Memory must be freed by the caller using allocator.free()
+/// Example: const result = try repeat(allocator, "ab", 3); // "ababab"
+pub fn repeat(allocator: std.mem.Allocator, s: []const u8, n: usize) ![]u8 {
+    if (n == 0) return allocator.alloc(u8, 0);
+    const result = try allocator.alloc(u8, s.len * n);
+    for (0..n) |i| {
+        @memcpy(result[i * s.len .. (i + 1) * s.len], s);
+    }
+    return result;
+}
+
+/// Counts occurrences of a substring in a string
+/// Example: const count = count_substr("ababa", "aba"); // returns 1 (non-overlapping)
+pub fn count_substr(haystack: []const u8, needle: []const u8) usize {
+    if (needle.len == 0 or needle.len > haystack.len) return 0;
+    var count: usize = 0;
+    var i: usize = 0;
+    while (i + needle.len <= haystack.len) {
+        if (std.mem.eql(u8, haystack[i .. i + needle.len], needle)) {
+            count += 1;
+            i += needle.len;
+        } else {
+            i += 1;
+        }
+    }
+    return count;
+}
+
+/// Returns the index of the first occurrence of needle in haystack, or null if not found
+/// Example: const idx = index_of("hello", "ll"); // returns 2
+pub fn index_of(haystack: []const u8, needle: []const u8) ?usize {
+    return std.mem.indexOf(u8, haystack, needle);
+}
+
+//=============================================================================
+// Additional Mathematical Functions
+//=============================================================================
+/// Tangent function for f32 using sin/cos
+/// Example: const result = tan_f32(0.5);
+pub fn tan_f32(x: f32) f32 {
+    const c = cos_f32(x);
+    if (c == 0) return std.math.inf(f32);
+    return sin_f32(x) / c;
+}
+
+/// Tangent function for f64 using sin/cos
+/// Example: const result = tan_f64(0.5);
+pub fn tan_f64(x: f64) f64 {
+    const c = cos_f64(x);
+    if (c == 0) return std.math.inf(f64);
+    return sin_f64(x) / c;
+}
+
+/// Generic minimum of two values
+/// Example: const m = min(@as(i32, 5), @as(i32, 3)); // returns 3
+pub fn min(a: anytype, b: @TypeOf(a)) @TypeOf(a) {
+    return if (a < b) a else b;
+}
+
+/// Generic maximum of two values
+/// Example: const m = max(@as(i32, 5), @as(i32, 3)); // returns 5
+pub fn max(a: anytype, b: @TypeOf(a)) @TypeOf(a) {
+    return if (a > b) a else b;
+}
+
+/// Clamps a value between min and max bounds
+/// Example: const clamped = clamp(@as(i32, 15), 0, 10); // returns 10
+pub fn clamp(value: anytype, min_val: @TypeOf(value), max_val: @TypeOf(value)) @TypeOf(value) {
+    return max(min_val, min(max_val, value));
+}
+
+/// Calculates factorial of n (n!)
+/// Returns 1 for n=0, and the product 1*2*...*n otherwise
+/// Example: const result = factorial(5); // returns 120
+pub fn factorial(n: u64) u64 {
+    if (n <= 1) return 1;
+    var result: u64 = 1;
+    var i: u64 = 2;
+    while (i <= n) : (i += 1) {
+        result *= i;
+    }
+    return result;
+}
+
+/// Greatest common divisor using Euclidean algorithm
+/// Example: const result = gcd(48, 18); // returns 6
+pub fn gcd(a: anytype, b: @TypeOf(a)) @TypeOf(a) {
+    var x = if (a < 0) -a else a;
+    var y = if (b < 0) -b else b;
+    while (y != 0) {
+        const temp = y;
+        y = @mod(x, y);
+        x = temp;
+    }
+    return x;
+}
+
+/// Least common multiple
+/// Example: const result = lcm(4, 6); // returns 12
+pub fn lcm(a: anytype, b: @TypeOf(a)) @TypeOf(a) {
+    if (a == 0 or b == 0) return 0;
+    const abs_a = if (a < 0) -a else a;
+    const abs_b = if (b < 0) -b else b;
+    return @divExact(abs_a, gcd(a, b)) * abs_b;
+}
+
+/// Checks if a number is prime
+/// Example: if (is_prime(17)) { ... }
+pub fn is_prime(n: u64) bool {
+    if (n < 2) return false;
+    if (n == 2) return true;
+    if (n % 2 == 0) return false;
+    var i: u64 = 3;
+    while (i * i <= n) : (i += 2) {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
+
+/// Converts degrees to radians
+/// Example: const rad = deg_to_rad(180.0); // returns pi
+pub fn deg_to_rad(deg: anytype) @TypeOf(deg) {
+    const pi: @TypeOf(deg) = 3.14159265358979323846;
+    return deg * pi / 180.0;
+}
+
+/// Converts radians to degrees
+/// Example: const deg = rad_to_deg(pi); // returns 180.0
+pub fn rad_to_deg(rad: anytype) @TypeOf(rad) {
+    const pi: @TypeOf(rad) = 3.14159265358979323846;
+    return rad * 180.0 / pi;
+}
+
+/// Linear interpolation between two values
+/// t should be between 0 and 1
+/// Example: const mid = lerp(0.0, 10.0, 0.5); // returns 5.0
+pub fn lerp(a: anytype, b: @TypeOf(a), t: @TypeOf(a)) @TypeOf(a) {
+    return a + (b - a) * t;
+}
+
+/// Inverse linear interpolation - finds t given a value between a and b
+/// Example: const t = inv_lerp(0.0, 10.0, 5.0); // returns 0.5
+pub fn inv_lerp(a: anytype, b: @TypeOf(a), value: @TypeOf(a)) @TypeOf(a) {
+    if (b - a == 0) return 0;
+    return (value - a) / (b - a);
+}
+
+/// Maps a value from one range to another
+/// Example: const mapped = map_range(5.0, 0.0, 10.0, 0.0, 100.0); // returns 50.0
+pub fn map_range(value: anytype, in_min: @TypeOf(value), in_max: @TypeOf(value), out_min: @TypeOf(value), out_max: @TypeOf(value)) @TypeOf(value) {
+    return lerp(out_min, out_max, inv_lerp(in_min, in_max, value));
+}
+
+/// Sign function - returns -1, 0, or 1
+/// Example: const s = sign(@as(i32, -5)); // returns -1
+pub fn sign(x: anytype) @TypeOf(x) {
+    if (x > 0) return 1;
+    if (x < 0) return -1;
+    return 0;
+}
+
+//=============================================================================
+// Additional File Operations
+//=============================================================================
+/// Writes content to a file, creating it if it doesn't exist
+/// Example: try write_file("output.txt", "Hello, World!");
+pub fn write_file(path: []const u8, content: []const u8) !void {
+    const file = try std.fs.cwd().createFile(path, .{});
+    defer file.close();
+    try file.writeAll(content);
+}
+
+/// Appends content to a file, creating it if it doesn't exist
+/// Example: try append_file("log.txt", "New log entry\n");
+pub fn append_file(path: []const u8, content: []const u8) !void {
+    const file = std.fs.cwd().openFile(path, .{ .mode = .write_only }) catch |err| switch (err) {
+        error.FileNotFound => try std.fs.cwd().createFile(path, .{}),
+        else => return err,
+    };
+    defer file.close();
+    try file.seekFromEnd(0);
+    try file.writeAll(content);
+}
+
+/// Returns the size of a file in bytes
+/// Example: const size = try file_size("data.txt");
+pub fn file_size(path: []const u8) !u64 {
+    const file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+    const stat = try file.stat();
+    return stat.size;
+}
+
+/// Checks if a file exists (either as file or directory)
+/// Example: if (exists("config.txt")) { ... }
+pub fn exists(path: []const u8) bool {
+    return is_file(path) or is_dir(path);
+}
+
+//=============================================================================
+// Array/Slice Utilities
+//=============================================================================
+fn SliceElementType(comptime T: type) type {
+    const info = @typeInfo(T);
+    if (info == .pointer) {
+        const child = info.pointer.child;
+        const child_info = @typeInfo(child);
+        if (child_info == .array) {
+            return child_info.array.child;
+        }
+        return child;
+    }
+    return void;
+}
+
+/// Sums all elements in a numeric slice
+/// Example: const total = sum(&[_]i32{1, 2, 3, 4, 5}); // returns 15
+pub fn sum(slice: anytype) SliceElementType(@TypeOf(slice)) {
+    const T = SliceElementType(@TypeOf(slice));
+    var total: T = 0;
+    for (slice) |item| {
+        total += item;
+    }
+    return total;
+}
+
+/// Calculates the average of a numeric slice (returns f64)
+/// Example: const average = avg(&[_]i32{1, 2, 3, 4, 5}); // returns 3.0
+pub fn avg(slice: anytype) f64 {
+    if (slice.len == 0) return 0;
+    var total: f64 = 0;
+    for (slice) |item| {
+        total += @as(f64, @floatFromInt(item));
+    }
+    return total / @as(f64, @floatFromInt(slice.len));
+}
+
+/// Reverses a slice in place
+/// Example: var arr = [_]i32{1, 2, 3}; reverse(&arr); // arr is now {3, 2, 1}
+pub fn reverse(slice: anytype) void {
+    if (slice.len < 2) return;
+    var left: usize = 0;
+    var right: usize = slice.len - 1;
+    while (left < right) {
+        const temp = slice[left];
+        slice[left] = slice[right];
+        slice[right] = temp;
+        left += 1;
+        right -= 1;
+    }
+}
+
+/// Binary search for a value in a sorted slice
+/// Returns the index if found, null otherwise
+/// Example: const idx = binary_search(&[_]i32{1, 3, 5, 7, 9}, 5); // returns 2
+pub fn binary_search(slice: anytype, value: SliceElementType(@TypeOf(slice))) ?usize {
+    if (slice.len == 0) return null;
+    var left: usize = 0;
+    var right: usize = slice.len;
+    while (left < right) {
+        const mid = left + (right - left) / 2;
+        if (slice[mid] == value) {
+            return mid;
+        } else if (slice[mid] < value) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    return null;
+}
+
+/// Finds the minimum value in a slice
+/// Returns null for empty slices
+/// Example: const minimum = slice_min(&[_]i32{5, 2, 8, 1}); // returns 1
+pub fn slice_min(slice: anytype) ?SliceElementType(@TypeOf(slice)) {
+    if (slice.len == 0) return null;
+    var minimum = slice[0];
+    for (slice[1..]) |item| {
+        if (item < minimum) minimum = item;
+    }
+    return minimum;
+}
+
+/// Finds the maximum value in a slice
+/// Returns null for empty slices
+/// Example: const maximum = slice_max(&[_]i32{5, 2, 8, 1}); // returns 8
+pub fn slice_max(slice: anytype) ?SliceElementType(@TypeOf(slice)) {
+    if (slice.len == 0) return null;
+    var maximum = slice[0];
+    for (slice[1..]) |item| {
+        if (item > maximum) maximum = item;
+    }
+    return maximum;
+}
+
+//=============================================================================
+// Additional Random Number Generation
+//=============================================================================
+/// Generates a random f32 in the range [0, 1)
+/// Example: const f = rng_f32(); // random float between 0 and 1
+pub fn rng_f32() f32 {
+    const bits = random.int(u32);
+    return @as(f32, @floatFromInt(bits >> 8)) / @as(f32, 1 << 24);
+}
+
+/// Generates a random f64 in the range [0, 1)
+/// Example: const f = rng_f64(); // random float between 0 and 1
+pub fn rng_f64() f64 {
+    const bits = random.int(u64);
+    return @as(f64, @floatFromInt(bits >> 11)) / @as(f64, 1 << 53);
+}
+
+/// Generates a random f32 in the specified range [min, max)
+/// Example: const f = rng_f32_range(1.0, 10.0);
+pub fn rng_f32_range(min_val: f32, max_val: f32) f32 {
+    return min_val + rng_f32() * (max_val - min_val);
+}
+
+/// Generates a random f64 in the specified range [min, max)
+/// Example: const f = rng_f64_range(1.0, 10.0);
+pub fn rng_f64_range(min_val: f64, max_val: f64) f64 {
+    return min_val + rng_f64() * (max_val - min_val);
+}
+
+/// Generates a random boolean
+/// Example: if (rng_bool()) { ... }
+pub fn rng_bool() bool {
+    return random.boolean();
+}
+
+/// Shuffles a slice in place using Fisher-Yates algorithm
+/// Example: var arr = [_]i32{1, 2, 3, 4, 5}; shuffle(&arr);
+pub fn shuffle(slice: anytype) void {
+    if (slice.len < 2) return;
+    var i: usize = slice.len - 1;
+    while (i > 0) : (i -= 1) {
+        const j = random.intRangeAtMost(usize, 0, i);
+        const temp = slice[i];
+        slice[i] = slice[j];
+        slice[j] = temp;
+    }
+}
+
+/// Picks a random element from a slice
+/// Returns null for empty slices
+/// Example: const item = rng_choice(&[_]str{"a", "b", "c"});
+pub fn rng_choice(slice: anytype) ?SliceElementType(@TypeOf(slice)) {
+    if (slice.len == 0) return null;
+    const idx = random.intRangeAtMost(usize, 0, slice.len - 1);
+    return slice[idx];
+}
+
+//=============================================================================
+// Bit Manipulation Utilities
+//=============================================================================
+/// Counts the number of set bits (1s) in an integer
+/// Example: const count = popcount(@as(u8, 0b10110)); // returns 3
+pub fn popcount(x: anytype) u32 {
+    return @popCount(x);
+}
+
+/// Returns the number of leading zeros in an integer
+/// Example: const zeros = leading_zeros(@as(u8, 0b00001000)); // returns 4
+pub fn leading_zeros(x: anytype) u32 {
+    return @clz(x);
+}
+
+/// Returns the number of trailing zeros in an integer
+/// Example: const zeros = trailing_zeros(@as(u8, 0b00001000)); // returns 3
+pub fn trailing_zeros(x: anytype) u32 {
+    return @ctz(x);
+}
+
+/// Checks if a number is a power of two
+/// Example: if (is_power_of_two(8)) { ... } // true
+pub fn is_power_of_two(x: anytype) bool {
+    return x > 0 and (x & (x - 1)) == 0;
+}
+
+/// Returns the next power of two >= x
+/// Example: const next = next_power_of_two(@as(u32, 5)); // returns 8
+pub fn next_power_of_two(x: anytype) @TypeOf(x) {
+    if (x == 0) return 1;
+    if (is_power_of_two(x)) return x;
+    const T = @TypeOf(x);
+    const bits = @bitSizeOf(T);
+    const shift: std.math.Log2Int(T) = @intCast(bits - @clz(x));
+    return @as(T, 1) << shift;
 }

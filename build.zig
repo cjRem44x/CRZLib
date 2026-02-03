@@ -32,6 +32,7 @@ pub fn build(b: *std.Build) void {
         .{ .name = "file_ops", .desc = "File operations example" },
         .{ .name = "string_ops", .desc = "String operations example" },
         .{ .name = "math_funcs", .desc = "Mathematical functions example" },
+        .{ .name = "new_utils", .desc = "New utilities example" },
     };
 
     inline for (examples) |example| {
